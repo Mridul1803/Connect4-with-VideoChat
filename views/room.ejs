@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        const ROOM_ID = '<%= roomId %>'
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
+    <script src='/socket.io/socket.io.js' defer></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script>
+        var socket = io();
+    </script>
+    
+    <script src='script.js' defer ></script>
+    <script src='socket.js' defer></script>
+    <title>Video</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      
+    <style>
+        /* *{
+            box-sizing: border-box;
+        } */
+        body{
+            margin: 0;
+            /* background: rgb(113,88,226);
+    background: radial-gradient(circle, rgba(113,88,226,1) 0%, rgba(61,61,61,1) 64%); */
+            /* background: rgb(165,33,40);
+            background: linear-gradient(164deg, rgba(165,33,40,1) 11%, rgba(219,185,50,1) 100%); */
+        
+            /* background: rgb(183,6,6);
+            background: radial-gradient(circle, rgba(183,6,6,1) 0%, rgba(150,135,2,1) 100%); */
+            /* background: linear-gradient(90deg, #d53369 0%, #daae51 100%); */
+            /* background: linear-gradient(90deg, #2b197a 0%, #5f86e9 100%); */
+            background: linear-gradient(90deg, #182848 0%, #4b6cb7 100%);
+        }
+        
+        .right-sidebar{
+            position: absolute;
+            height: 87vh;
+            width: 25vw;
+            /* background-color: blue; */
+            top: 13vh;
+            right: 0;
+            /* background: rgb(197,108,240);
+        background: linear-gradient(164deg, rgba(197,108,240,1) 34%, rgba(24,220,255,1) 85%); */
+        }
+
+        #video-grid{
+            position: absolute;
+            right: 5.5vw;
+            top: 7vh;
+            height: 58vh;
+            width: 19vw;
+            display: flex;
+            flex-direction: column;
+            /* background-color: aqua; */
+            padding: 8px;
+            border-radius: 10px;
+            /* background-color: rgb(241, 213, 185); */
+            /* background: linear-gradient(90deg, #00d2ff 0%, #3a47d5 100%); */
+            background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+        }
+        
+        video{
+            width: 100%;
+            height: 44%;
+            object-fit: cover;
+            margin-bottom: 3%;
+        }
+
+        .button-container{
+            display: flex;
+            justify-content:space-evenly;
+            align-items: center;
+        }
+
+        .video-chat-button{
+            background-color: #a52128;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            width: 71px;
+            height: 30px;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .heading{
+            position: absolute;
+            width: 80%;
+            height: 13vh;
+            right: 14vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* background-color: #dbb932; */
+            font-size: 2.5rem;
+            font-weight: bolder;
+            /* font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; */
+            font-family: 'Rock Salt', cursive;
+            color: white;
+        }
+
+        .grid{
+            position: absolute;
+            height: 550px;
+            width: 550px;
+            background-color: rgb(124, 182, 236);
+            /* background: rgb(165,33,40);
+            background: linear-gradient(164deg, rgba(165,33,40,1) 11%, rgba(219,185,50,1) 100%); */
+            bottom: 2vh;
+            /* left: calc( (100vw - 43vw)/2 ); */
+            left: 26vw;
+            padding: 1%;
+            border: 2px solid black;
+            border-radius: 5px;
+        }
+
+        .cell-container{
+            height: 100%;
+            width: 100%;
+            /* background-color: rgb(235, 235, 129); */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+
+        .row{
+            width: 100%;
+            height: calc((100%)/9 );
+            /* background-color: yellow; */
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            /* border: 1px solid; */
+            /* padding: 0.5%; */
+        }
+
+        .cell{
+            height: 97%;
+            width: calc(100%/9);
+            background-color: white;
+            border-radius: 50%;
+            border: 2px solid rgb(53, 52, 52);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .highlightedCells{
+            /* background-color: rgba(50, 50, 248, 0.747); */
+            animation: highlights 2s infinite;
+            
+        }
+
+        @keyframes highlights{
+            0%{
+                border-color: rebeccapurple;
+                background-color: rebeccapurple;
+            }
+            25%{
+                border-color:rgb(40, 71, 209);
+                background-color:rgb(40, 71, 209);
+            }
+            50%{
+                border-color:rgb(207, 23, 192);
+                background-color:rgb(207, 23, 192);
+            }
+            100%{
+                border-color: rgb(27, 247, 7);
+                background-color: rgb(27, 247, 7);
+            }
+        }
+
+        .token
+        {
+            height: 82%;
+            width: 82%;
+            /* background-color: yellow; */
+            border-radius: 50%;
+            animation: visible 1s;
+        }
+
+        @keyframes visible{
+            0%{
+                height: 0;
+                width: 0;
+            }
+            
+            100%{
+                height: 82%;
+                width: 82%;
+            }
+        }
+
+        .yellow-token{
+            background-color: yellow;
+            border: 5px solid rgb(221, 181, 4);
+        }
+        .red-token{
+            background-color: rgb(248, 41, 41);
+            border: 5px solid rgb(221, 4, 4);
+        }
+
+        .modal-container{
+            position: absolute;
+            top: 0vh;
+            height: 100vh;
+            width: 100vw;
+            background-color: rgba(85, 87, 87, 0.486);
+        }
+
+        .winner-modal{
+            position: absolute;
+            height: 30vh;
+            width: 25vw;
+            background-color: white;
+            top: calc( (100vh - 30vh)/2 );
+            left: calc( (100vw - 25vw)/2 );
+            display: flex;
+            flex-direction: column;
+            /* padding: 1%; */
+            border-radius: 15px;
+            box-shadow: 0px 10px 40px rgb(17, 16, 16);
+        }
+
+        .modal-text{
+            margin-top: 10%;
+            width: 100%;
+            height: 20%;
+            text-align: center;
+            font-size: 1.4rem;
+        }
+
+        .modal-buttons{
+            width: 100%;
+            height: 80%;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        .button{
+            height: 40%;
+            width: 30%;
+            border-radius: 20px;
+            background-color: rgb(41, 145, 41);
+            /* text-align: center; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left-sidebar{
+            height: 87vh;
+            width: 12vw;
+            /* background-color: #a52128; */
+        }
+
+        .action-panel{
+            position: absolute;
+            top: 36vh;
+            left: 6vw;
+            height: 33vh;
+            width: 6vw;
+            /* background-color: cyan; */
+            /* background: rgb(197,108,240);
+            background: linear-gradient(164deg, rgba(197,108,240,1) 34%, rgba(24,220,255,1) 85%); */
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            /* background-color: white; */
+            background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+
+        }
+
+        .undo-btn, .reset-btn, .add-btn{
+            height: 33.3%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .undo-btn{
+            cursor: not-allowed;
+            border-bottom: 2px solid black;
+        }
+        .reset-btn{
+            border-bottom: 2px solid black;
+        }
+
+        .reset-modal{
+            position: absolute;
+            height: 30vh;
+            width: 25vw;
+            background-color: white;
+            top: calc( (100vh - 30vh)/2 );
+            left: calc( (100vw - 25vw)/2 );
+            display: flex;
+            flex-direction: column;
+            /* padding: 1%; */
+            border-radius: 15px;
+            box-shadow: 0px 10px 40px rgb(17, 16, 16);
+        }
+    </style>
+</head>
+<body>
+    <div class='container' >
+
+        <div class='heading' >
+            <span>CONNECT 4</span>
+        </div>
+        <div class='grid'>
+            <div class='cell-container'>
+            </div>
+            
+        </div>        
+
+        <div class='left-sidebar' >
+            <div class='action-panel' >
+                <div class='undo-btn material-icons' >undo</div>
+                <div class='reset-btn material-icons'>restart_alt</div>
+                <div class='add-btn material-icons'>person_add_alt</div>
+            </div>
+        </div>
+
+        <div class='right-sidebar' >
+            <div id='video-grid' >
+                <div class='button-container' >
+                    <div class='mic-button video-chat-button' onclick="muteUnmute()" >
+                        <span class="material-icons mic-on">mic</span>
+                    </div>
+                    <div class='video-button video-chat-button' onclick="muteUnmuteVideo()" >
+                        <span class="material-icons video-on">videocam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
