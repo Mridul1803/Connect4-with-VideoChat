@@ -37,6 +37,9 @@ socket.on( 'win-modal', function({winnerModal, userlist}){
                                 </div>
                             </div>`
             $('.container').append(winnerModal);
+            $('.modal-container').click( function(){
+            $('.modal-container').remove();
+        } )
         
         $('.play-again-button').click( function(){
             createNewGrid();
@@ -44,6 +47,7 @@ socket.on( 'win-modal', function({winnerModal, userlist}){
             $('.highlightedCells').removeClass('highlightedCells');
             gameEnded = false;
             turnCount = 0;
+            $('.modal-container').remove();
         } )
     }, 700);
 } )

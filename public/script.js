@@ -204,6 +204,10 @@ $('.cell').click( function(){
             } )
             setTimeout(() => {
                     $('.container').append(winnerModal);
+                    $('.modal-container').click( function(){
+                    // console.log('close');
+                    $('.modal-container').remove();
+                } )
                 
                 $('.play-again-button').click( function(){
                     createNewGrid();
